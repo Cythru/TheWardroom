@@ -1,0 +1,1588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Wardroom — Waterfront Dining, Salcombe</title>
+  <meta name="description" content="Waterfront café and restaurant in Salcombe, Devon. Fresh local seafood, Origin coffee, and spectacular estuary views since the 1980s.">
+
+  <!--
+    Fonts:
+    - Cinzel       → logo / nameplate (engraved Roman caps, matches the naval name)
+    - Playfair     → headings and display text
+    - Lato         → body / UI
+  -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* =============================================================
+       TOKENS — change these and everything follows
+       ============================================================= */
+    :root {
+      --navy:      #0B2447;
+      --deep:      #061529;
+      --coral:     #C8683A;
+      --coral-dk:  #a84f24;
+      --sky:       #6aaec0;
+      --mist:      #9BBFD0;
+      --light-bg:  #f4f7fb;
+      --mid-bg:    #edf2f7;
+      --border:    #c8d8e8;
+      --text:      #1a2e45;
+      --text-muted:#5a7a9a;
+
+      --font-logo:    'Cinzel', Georgia, serif;
+      --font-display: 'Playfair Display', Georgia, serif;
+      --font-body:    'Lato', sans-serif;
+
+      --radius: 2px;
+      --transition: 0.2s ease;
+      --shadow: 0 4px 24px rgba(6,21,41,0.12);
+    }
+
+    /* =============================================================
+       RESET + BASE
+       ============================================================= */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--light-bg);
+      color: var(--text);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    img { display: block; max-width: 100%; }
+    a { color: inherit; text-decoration: none; }
+
+    /* Utility — probably overkill to make a whole class for these but I use them everywhere */
+    .u-label {
+      font-size: 0.68rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--coral);
+    }
+    .u-divider {
+      width: 48px; height: 1px;
+      background: var(--coral);
+      margin: 1.4rem 0;
+    }
+    .u-divider--center { margin-left: auto; margin-right: auto; }
+
+
+    /* =============================================================
+       SCROLL REVEAL
+       Elements start invisible; JS adds .is-visible when they enter
+       viewport. transition-delay variants let me stagger children.
+       ============================================================= */
+    .reveal {
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity 0.65s ease, transform 0.65s ease;
+    }
+    .reveal.is-visible { opacity: 1; transform: none; }
+    .reveal--d1 { transition-delay: 0.1s; }
+    .reveal--d2 { transition-delay: 0.22s; }
+    .reveal--d3 { transition-delay: 0.34s; }
+
+
+    /* =============================================================
+       NAV
+       ============================================================= */
+    .nav {
+      position: fixed; inset: 0 0 auto;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.3rem 3.5rem;
+      /* transparent until scrolled — JS adds .nav--solid */
+      transition: background var(--transition), backdrop-filter var(--transition), box-shadow var(--transition);
+    }
+    .nav--solid {
+      background: rgba(6, 21, 41, 0.94);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+    }
+
+    /* Mini wordmark in the nav — keeps Cinzel but scaled down */
+    .nav__logo {
+      font-family: var(--font-logo);
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #fff;
+    }
+
+    .nav__links {
+      display: flex;
+      align-items: center;
+      gap: 2.4rem;
+      list-style: none;
+    }
+    .nav__links a {
+      color: rgba(255,255,255,0.78);
+      font-size: 0.72rem;
+      font-weight: 400;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      transition: color var(--transition);
+    }
+    .nav__links a:hover { color: var(--coral); }
+
+    .nav__cta {
+      border: 1px solid var(--coral);
+      color: var(--coral) !important; /* specificity fight with the a selector above — fine */
+      padding: 0.45rem 1.2rem;
+      border-radius: var(--radius);
+      transition: background var(--transition), color var(--transition) !important;
+    }
+    .nav__cta:hover {
+      background: var(--coral);
+      color: #fff !important;
+    }
+
+    .nav__socials {
+      display: flex;
+      gap: 0.7rem;
+      align-items: center;
+    }
+    .nav__social-icon {
+      display: grid;
+      place-items: center;
+      width: 34px; height: 34px;
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 50%;
+      color: rgba(255,255,255,0.7);
+      transition: background var(--transition), border-color var(--transition), color var(--transition);
+    }
+    .nav__social-icon:hover {
+      background: var(--coral);
+      border-color: var(--coral);
+      color: #fff;
+    }
+
+
+    /* =============================================================
+       HERO
+       ============================================================= */
+    .hero {
+      height: 100vh;
+      min-height: 680px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .hero__bg {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(to bottom,
+          rgba(6,21,41,0.5)  0%,
+          rgba(6,21,41,0.22) 45%,
+          rgba(6,21,41,0.7)  100%),
+        url('https://static.wixstatic.com/media/6e87c4_ad8902d4a7374cbdaff31d591047c5df~mv2.jpg');
+      background-size: cover;
+      background-position: center 40%;
+    }
+
+    /* animated wave overlay — pure CSS, no JS needed */
+    .hero__bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg width='200' height='80' viewBox='0 0 200 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 50 Q50 25 100 50 Q150 75 200 50 L200 80 L0 80 Z' fill='rgba(106,174,192,0.06)'/%3E%3C/svg%3E");
+      background-size: 400px 160px;
+      background-repeat: repeat-x;
+      background-position: 0 65%;
+      animation: waves 14s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes waves {
+      from { background-position: 0 65%; }
+      to   { background-position: 400px 65%; }
+    }
+
+    .hero__content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding: 0 1.5rem;
+      animation: fadeUp 1s 0.2s both;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    .hero__location {
+      font-size: 0.68rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--mist);
+      margin-bottom: 2rem;
+    }
+
+
+    /* ── THE WARDROOM NAMEPLATE ──────────────────────────────────
+       Cinzel is modelled on ancient Roman inscriptions — exactly
+       the feel of a brass plaque in a naval officers' mess.
+       The ornamental rules top/bottom complete the lockup.
+       ──────────────────────────────────────────────────────────── */
+    .nameplate {
+      display: inline-block;
+      border: 1px solid rgba(255,255,255,0.35);
+      padding: 1.4rem 3rem 1.2rem;
+      margin-bottom: 2rem;
+      position: relative;
+    }
+    /* corner ticks — pure CSS, no extra elements */
+    .nameplate::before,
+    .nameplate::after {
+      content: '';
+      position: absolute;
+      width: 10px; height: 10px;
+      border-color: var(--coral);
+      border-style: solid;
+    }
+    .nameplate::before {
+      top: -1px; left: -1px;
+      border-width: 2px 0 0 2px;
+    }
+    .nameplate::after {
+      bottom: -1px; right: -1px;
+      border-width: 0 2px 2px 0;
+    }
+
+    .nameplate__rule {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin-bottom: 0.6rem;
+      color: rgba(255,255,255,0.4);
+      font-size: 0.6rem;
+      letter-spacing: 0.3em;
+    }
+    .nameplate__rule::before,
+    .nameplate__rule::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(255,255,255,0.3);
+    }
+
+    .nameplate__the {
+      display: block;
+      font-family: var(--font-logo);
+      font-size: clamp(0.7rem, 1.4vw, 1rem);
+      font-weight: 400;
+      letter-spacing: 0.55em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.75);
+      margin-bottom: 0.15rem;
+    }
+
+    .nameplate__name {
+      display: block;
+      font-family: var(--font-logo);
+      font-size: clamp(2.8rem, 7.5vw, 6rem);
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #fff;
+      line-height: 1;
+      /* Cinzel's serifs need a touch of text-shadow to sing */
+      text-shadow: 0 2px 30px rgba(0,0,0,0.3), 0 0 60px rgba(106,174,192,0.15);
+    }
+
+    .nameplate__sub {
+      display: block;
+      font-family: var(--font-logo);
+      font-size: clamp(0.55rem, 0.9vw, 0.72rem);
+      font-weight: 400;
+      letter-spacing: 0.45em;
+      text-transform: uppercase;
+      color: var(--mist);
+      margin-top: 0.6rem;
+    }
+
+    .nameplate__rule--bottom {
+      margin-top: 0.6rem;
+      margin-bottom: 0;
+    }
+    /* ─────────────────────────────────────────────────────────── */
+
+    .hero__tagline {
+      font-size: 0.78rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 2.4rem;
+    }
+
+    .hero__actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 1.8rem;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 0.85rem 2.2rem;
+      font-family: var(--font-body);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      border-radius: var(--radius);
+      transition: background var(--transition), color var(--transition), transform var(--transition), border-color var(--transition);
+      cursor: pointer;
+    }
+    .btn:hover { transform: translateY(-2px); }
+
+    .btn--primary {
+      background: var(--coral);
+      color: #fff;
+      border: 1px solid var(--coral);
+    }
+    .btn--primary:hover { background: var(--coral-dk); border-color: var(--coral-dk); }
+
+    .btn--ghost {
+      background: transparent;
+      color: rgba(255,255,255,0.85);
+      border: 1px solid rgba(255,255,255,0.4);
+    }
+    .btn--ghost:hover { border-color: var(--coral); color: var(--coral); }
+
+    .hero__review-links {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .hero__review-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.45rem 1rem;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.16);
+      border-radius: var(--radius);
+      color: rgba(255,255,255,0.7);
+      font-size: 0.68rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      transition: background var(--transition), border-color var(--transition), color var(--transition);
+    }
+    .hero__review-link:hover {
+      background: rgba(255,255,255,0.13);
+      border-color: var(--coral);
+      color: #fff;
+    }
+
+    .hero__scroll-hint {
+      position: absolute;
+      bottom: 2.2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      color: rgba(255,255,255,0.4);
+      font-size: 0.6rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      animation: scrollBob 2.8s ease-in-out infinite;
+    }
+    .hero__scroll-hint::after {
+      content: '';
+      display: block;
+      width: 1px;
+      height: 36px;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.35), transparent);
+    }
+    @keyframes scrollBob {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50%       { transform: translateX(-50%) translateY(7px); }
+    }
+
+
+    /* =============================================================
+       SHARED SECTION STYLES
+       ============================================================= */
+    .section { padding: 6rem 2rem; }
+    .section--dark { background: var(--navy); }
+    .section--mid  { background: var(--mid-bg); }
+    .section--light{ background: var(--light-bg); }
+    .section--deep { background: var(--deep); }
+
+    .container { max-width: 1100px; margin: 0 auto; }
+    .container--narrow { max-width: 860px; margin: 0 auto; }
+
+    h2 {
+      font-family: var(--font-display);
+      font-size: clamp(1.9rem, 3.8vw, 3rem);
+      font-weight: 400;
+      line-height: 1.18;
+      color: var(--navy);
+    }
+    h2 em { font-style: italic; color: var(--sky); }
+    .section--dark h2,
+    .section--deep h2 { color: #fff; }
+
+    p {
+      line-height: 1.85;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      font-weight: 300;
+    }
+    .section--dark p,
+    .section--deep p { color: rgba(255,255,255,0.55); }
+
+
+    /* =============================================================
+       ABOUT
+       ============================================================= */
+    .about__inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+    }
+
+    /* Photo card with a decorative offset border */
+    .about__photo-wrap {
+      position: relative;
+    }
+    .about__photo {
+      aspect-ratio: 3/4;
+      background:
+        url('https://static.wixstatic.com/media/6e87c4_8b1a18f8c1e44c9b97237545541c2363~mv2.jpg')
+        center / cover no-repeat;
+      border-radius: var(--radius);
+      overflow: hidden;
+      position: relative;
+    }
+    .about__photo-caption {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 2rem;
+      background: linear-gradient(to top, rgba(6,21,41,0.85), transparent);
+    }
+    .about__photo-caption h3 {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      font-weight: 400;
+      color: #fff;
+      line-height: 1.25;
+      margin-bottom: 0.3rem;
+    }
+    .about__photo-caption small {
+      font-size: 0.68rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--mist);
+    }
+    /* offset corner accent */
+    .about__photo-wrap::after {
+      content: '';
+      position: absolute;
+      top: -12px; right: -12px;
+      bottom: 12px; left: 12px;
+      border: 1px solid var(--coral);
+      border-radius: var(--radius);
+      z-index: -1;
+    }
+
+    .about__text p + p { margin-top: 1.1rem; }
+
+    .about__tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-top: 2rem;
+      padding: 0.75rem 1.3rem;
+      background: var(--navy);
+      color: var(--mist);
+      font-size: 0.72rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      border-radius: var(--radius);
+    }
+    .about__tag::before { content: '✦'; color: var(--coral); }
+
+
+    /* =============================================================
+       SHOWCASE SECTION — "Life on the Estuary"
+       ============================================================= */
+    .showcase { padding: 6rem 2rem; background: var(--light-bg); }
+
+    .showcase__intro {
+      max-width: 680px;
+      margin: 0 auto 5rem;
+      text-align: center;
+    }
+    .showcase__intro p { max-width: 520px; margin: 0 auto; }
+
+    /* Three pillars — icon/image, heading, body copy */
+    .showcase__pillars {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      margin-bottom: 2px; /* gap before the mosaic row */
+    }
+    .pillar {
+      background: var(--light-bg);
+      display: flex;
+      flex-direction: column;
+    }
+    .pillar__img {
+      width: 100%;
+      aspect-ratio: 4/3;
+      object-fit: cover;
+      background: var(--mid-bg); /* fallback while loading */
+      display: block;
+      transition: transform 0.5s ease;
+    }
+    .pillar:hover .pillar__img { transform: scale(1.03); }
+    .pillar__img-wrap {
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .pillar__body {
+      padding: 2rem 2rem 2.5rem;
+      flex: 1;
+    }
+    .pillar__tag {
+      font-size: 0.62rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--coral);
+      margin-bottom: 0.7rem;
+    }
+    .pillar__title {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 400;
+      color: var(--navy);
+      margin-bottom: 0.75rem;
+      line-height: 1.25;
+    }
+    .pillar__copy {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.75;
+      font-weight: 300;
+    }
+
+    /* Supplier strip — a tight row of partner names */
+    .suppliers {
+      margin-top: 4rem;
+      padding-top: 2.5rem;
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+    .suppliers__label {
+      font-size: 0.62rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 1.4rem;
+    }
+    .suppliers__names {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem 2.5rem;
+    }
+    .suppliers__name {
+      font-family: var(--font-display);
+      font-size: 0.9rem;
+      font-weight: 400;
+      color: var(--navy);
+      opacity: 0.6;
+      letter-spacing: 0.05em;
+      transition: opacity var(--transition);
+    }
+    .suppliers__name:hover { opacity: 1; }
+
+    /* Photo mosaic — asymmetric grid of terrace/food shots */
+    .photo-mosaic {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      grid-template-rows: 260px 260px;
+      gap: 2px;
+      background: var(--border);
+    }
+    .mosaic-img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.5s ease, filter 0.3s ease;
+      filter: brightness(0.96);
+    }
+    .mosaic-img:hover { transform: scale(1.04); filter: brightness(1.04); }
+    .mosaic-img--tall {
+      grid-row: 1 / 3; /* spans both rows */
+    }
+
+    /* Responsive — pillars stack on tablet */
+    @media (max-width: 900px) {
+      .showcase__pillars { grid-template-columns: 1fr; }
+      .photo-mosaic {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 200px 200px 200px;
+      }
+      .mosaic-img--tall { grid-row: auto; }
+    }
+    @media (max-width: 520px) {
+      .photo-mosaic {
+        grid-template-columns: 1fr;
+        grid-template-rows: repeat(6, 180px);
+      }
+    }
+
+    /* =============================================================
+       TERRACE BANNER
+       ============================================================= */
+    .terrace-banner {
+      height: 420px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background-image:
+        linear-gradient(to bottom,
+          rgba(6,21,41,0.2) 0%,
+          rgba(6,21,41,0.08) 50%,
+          rgba(6,21,41,0.38) 100%),
+        url('https://static.wixstatic.com/media/6e87c4_95045ade488140ae8884fc2c62da8295~mv2.jpg');
+      background-size: cover;
+      background-position: center 35%;
+      /* subtle parallax — handled in JS via --offset custom property */
+      background-attachment: fixed;
+    }
+    .terrace-banner__text { text-align: center; position: relative; z-index: 1; }
+    .terrace-banner__label {
+      font-size: 0.68rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 1rem;
+    }
+    .terrace-banner__quote {
+      font-family: var(--font-display);
+      font-size: clamp(1.4rem, 3.5vw, 2.4rem);
+      font-weight: 400;
+      font-style: italic;
+      color: #fff;
+      line-height: 1.3;
+      text-shadow: 0 2px 24px rgba(0,0,0,0.4);
+    }
+
+
+    /* =============================================================
+       MENU
+       ============================================================= */
+    .menu__header {
+      text-align: center;
+      margin-bottom: 3.5rem;
+    }
+    .menu__header p { max-width: 460px; margin: 0 auto; }
+
+    .menu__tabs {
+      display: flex;
+      max-width: 480px;
+      margin: 0 auto 3rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .menu__tab {
+      flex: 1;
+      padding: 0.7rem 0.5rem;
+      background: none;
+      border: none;
+      border-right: 1px solid var(--border);
+      font-family: var(--font-body);
+      font-size: 0.7rem;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: background var(--transition), color var(--transition);
+    }
+    .menu__tab:last-child { border-right: none; }
+    .menu__tab.is-active { background: var(--navy); color: #fff; }
+    .menu__tab:not(.is-active):hover { background: var(--mid-bg); }
+
+    .menu__panel { display: none; }
+    .menu__panel.is-active { display: block; }
+
+    .menu__section-heading {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      font-weight: 500;
+      color: var(--navy);
+      padding-bottom: 0.7rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 0;
+      margin-top: 2.2rem;
+    }
+    .menu__section-heading:first-child { margin-top: 0; }
+
+    .menu__time {
+      font-family: var(--font-body);
+      font-size: 0.65rem;
+      font-weight: 400;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--coral);
+    }
+    .menu__section-note {
+      font-style: italic;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin: 0.8rem 0 1.4rem;
+      text-align: center;
+    }
+
+    .menu__grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+    }
+
+    .menu__item {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 1.5rem 1.8rem;
+      background: var(--light-bg);
+      transition: background var(--transition);
+    }
+    .menu__item:hover { background: var(--mid-bg); }
+
+    .menu__item-name {
+      font-family: var(--font-display);
+      font-size: 0.98rem;
+      font-weight: 400;
+      color: var(--navy);
+      margin-bottom: 0.25rem;
+    }
+    .menu__item-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+    }
+    .menu__item-price {
+      font-family: var(--font-display);
+      font-size: 0.98rem;
+      color: var(--coral);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+
+    /* =============================================================
+       RESERVATION
+       ============================================================= */
+    .reservation__header {
+      text-align: center;
+      margin-bottom: 3.5rem;
+    }
+    .reservation__header .u-divider { margin: 1.4rem auto; }
+
+    /* Grouped form inputs — the two-col grid collapses on mobile via media query */
+    .form__grid { display: grid; gap: 1.2rem; }
+    .form__row   { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+    .form__group { display: flex; flex-direction: column; gap: 0.45rem; }
+
+    label {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--mist);
+    }
+
+    input, select, textarea {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.14);
+      color: #fff;
+      padding: 0.8rem 0.95rem;
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      font-weight: 300;
+      border-radius: var(--radius);
+      outline: none;
+      width: 100%;
+      transition: border-color var(--transition), background var(--transition);
+      /* Safari has opinions about select styling */
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.28); }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--coral);
+      background: rgba(255,255,255,0.09);
+    }
+    select option { background: var(--navy); color: #fff; }
+    textarea { resize: vertical; min-height: 100px; }
+
+    .form__submit { text-align: center; margin-top: 0.8rem; }
+    .form__success {
+      display: none;
+      text-align: center;
+      padding: 2.5rem;
+      border: 1px solid rgba(106,174,192,0.4);
+      border-radius: var(--radius);
+      background: rgba(106,174,192,0.08);
+    }
+    .form__success h3 {
+      font-family: var(--font-display);
+      font-size: 1.7rem;
+      font-weight: 400;
+      color: #fff;
+      margin-bottom: 0.6rem;
+    }
+
+
+    /* =============================================================
+       INFO STRIP
+       ============================================================= */
+    .info-strip { padding: 4rem 2rem; background: var(--deep); }
+
+    .info-strip__grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2rem;
+      text-align: center;
+    }
+
+    .info-block__icon { font-size: 1.3rem; margin-bottom: 0.9rem; color: var(--coral); }
+
+    .info-block h4 {
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      font-weight: 400;
+      color: rgba(255,255,255,0.85);
+      margin-bottom: 0.55rem;
+      letter-spacing: 0.04em;
+    }
+    .info-block p {
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.42);
+      line-height: 1.75;
+    }
+    .info-block a {
+      color: var(--mist);
+      transition: color var(--transition);
+    }
+    .info-block a:hover { color: var(--coral); }
+
+
+    /* =============================================================
+       FOOTER
+       ============================================================= */
+    .footer {
+      background: var(--deep);
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 2.2rem 2rem;
+      text-align: center;
+    }
+    .footer__logo {
+      font-family: var(--font-logo);
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.45);
+      margin-bottom: 1.1rem;
+    }
+    .footer__socials {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.2rem;
+    }
+    .footer__social {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      color: rgba(255,255,255,0.38);
+      font-size: 0.68rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      transition: color var(--transition);
+    }
+    .footer__social:hover { color: var(--coral); }
+    .footer__copy {
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.2);
+      letter-spacing: 0.06em;
+    }
+
+
+    /* =============================================================
+       RESPONSIVE
+       ============================================================= */
+    @media (max-width: 900px) {
+      .nav { padding: 1.1rem 1.6rem; }
+      .nav__links { display: none; } /* TODO: add a hamburger menu one day */
+
+      .about__inner { grid-template-columns: 1fr; gap: 3rem; }
+      .about__photo-wrap { max-width: 340px; margin: 0 auto; }
+
+      .menu__grid { grid-template-columns: 1fr; }
+
+      .form__row { grid-template-columns: 1fr; }
+
+      .info-strip__grid { grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+
+      .terrace-banner { background-attachment: scroll; /* fixed doesn't work well on iOS */ }
+    }
+
+    @media (max-width: 520px) {
+      .nameplate { padding: 1rem 1.4rem; }
+      .info-strip__grid { grid-template-columns: 1fr; }
+      .footer__socials { gap: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ================================================================
+       NAV
+       ================================================================ -->
+  <nav class="nav" id="navbar">
+    <a class="nav__logo" href="#hero">The Wardroom</a>
+
+    <ul class="nav__links">
+      <li><a href="#about">Our Story</a></li>
+      <li><a href="#experience">The Experience</a></li>
+      <li><a href="#menu">Menu</a></li>
+      <li><a href="#reservation" class="nav__cta">Reserve a Table</a></li>
+    </ul>
+
+    <div class="nav__socials">
+      <a href="https://www.instagram.com/thewardroomsalcombe" target="_blank" rel="noopener" class="nav__social-icon" title="Instagram">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+          <rect x="2" y="2" width="20" height="20" rx="5"/>
+          <circle cx="12" cy="12" r="4"/>
+          <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
+        </svg>
+      </a>
+      <a href="https://www.facebook.com/thewardroomsalcombe" target="_blank" rel="noopener" class="nav__social-icon" title="Facebook">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+        </svg>
+      </a>
+    </div>
+  </nav>
+
+
+  <!-- ================================================================
+       HERO
+       ================================================================ -->
+  <section class="hero" id="hero">
+    <div class="hero__bg" aria-hidden="true"></div>
+
+    <div class="hero__content">
+      <p class="hero__location">Salcombe · Devon</p>
+
+      <div class="nameplate" role="img" aria-label="The Wardroom">
+        <div class="nameplate__rule">✦</div>
+        <span class="nameplate__the">The</span>
+        <span class="nameplate__name">Wardroom</span>
+        <span class="nameplate__sub">Salcombe &nbsp;·&nbsp; Devon</span>
+        <div class="nameplate__rule nameplate__rule--bottom">✦</div>
+      </div>
+
+      <p class="hero__tagline">Waterfront dining · Fresh local seafood · Origin coffee</p>
+
+      <div class="hero__actions">
+        <a href="#reservation" class="btn btn--primary">Reserve a Table</a>
+        <a href="#menu" class="btn btn--ghost">View Menu</a>
+      </div>
+
+      <div class="hero__review-links">
+        <a href="https://www.tripadvisor.co.uk/Restaurant_Review-g190768-d2465617-Reviews-The_Wardroom-Salcombe_Devon_England.html"
+           target="_blank" rel="noopener" class="hero__review-link">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm0 15a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-8a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg>
+          TripAdvisor
+        </a>
+        <a href="https://www.google.com/maps/search/The+Wardroom+19+Fore+Street+Salcombe"
+           target="_blank" rel="noopener" class="hero__review-link">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+          Google Reviews
+        </a>
+      </div>
+    </div>
+
+    <div class="hero__scroll-hint" aria-hidden="true">Scroll</div>
+  </section>
+
+
+  <!-- ================================================================
+       ABOUT
+       ================================================================ -->
+  <section class="section section--mid" id="about">
+    <div class="container">
+      <div class="about__inner">
+
+        <div class="about__photo-wrap reveal">
+          <div class="about__photo">
+            <div class="about__photo-caption">
+              <h3>Over 40 years<br>on the waterfront</h3>
+              <small>Est. 1980s &nbsp;·&nbsp; Family-owned since 2014</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="reveal reveal--d1">
+          <p class="u-label">Our Story</p>
+          <h2>Coastal flavours,<br><em>simply done well</em></h2>
+          <div class="u-divider"></div>
+          <div class="about__text">
+            <p>Tucked behind Crew Clothing on Fore Street, The Wardroom has been a cherished part of Salcombe's waterfront since the 1980s. Our family became custodians of this beloved café in 2014, embracing its rich heritage while adding our own chapter to its story.</p>
+            <p>We're more than just a café — we're a place where generations have gathered to share meals, memories, and magnificent estuary views. Whether it's our renowned Crab Benedict, a full Devon breakfast, or artisanal Origin Coffee, every visit is something to savour.</p>
+          </div>
+          <div class="about__tag">Open Daily from 8:30am</div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ================================================================
+       LIFE ON THE ESTUARY
+       ================================================================ -->
+  <section class="showcase" id="experience">
+    <div class="container">
+
+      <div class="showcase__intro reveal">
+        <p class="u-label">Life on the Estuary</p>
+        <h2>More than breakfast.<br><em>More than lunch.</em></h2>
+        <div class="u-divider u-divider--center"></div>
+        <p>We're a proper waterfront spot — the kind where you linger longer than you planned, order another coffee, and watch the sailboats drift by. Here's what keeps people coming back.</p>
+      </div>
+
+      <!-- Three feature pillars, each with a real photo from the terrace -->
+      <div class="showcase__pillars">
+
+        <div class="pillar reveal">
+          <div class="pillar__img-wrap">
+            <img class="pillar__img"
+              src="https://static.wixstatic.com/media/6e87c4_ad8902d4a7374cbdaff31d591047c5df~mv2.jpg"
+              alt="The Wardroom terrace overlooking Salcombe estuary"
+              loading="lazy">
+          </div>
+          <div class="pillar__body">
+            <p class="pillar__tag">The View</p>
+            <h3 class="pillar__title">A table with something to say</h3>
+            <p class="pillar__copy">Perched right on the waterfront with the estuary stretching out ahead of you, every seat feels like the best seat. There's nowhere quite like it in Salcombe — come for the food, stay for the view.</p>
+          </div>
+        </div>
+
+        <div class="pillar reveal reveal--d1">
+          <div class="pillar__img-wrap">
+            <img class="pillar__img"
+              src="https://static.wixstatic.com/media/6e87c4_f84369b0033c494b9bdd8c4d3e36ac96~mv2.png"
+              alt="Fresh local seafood dishes at The Wardroom"
+              loading="lazy">
+          </div>
+          <div class="pillar__body">
+            <p class="pillar__tag">The Food</p>
+            <h3 class="pillar__title">Devon on a plate, every time</h3>
+            <p class="pillar__copy">Our crab is hand-picked locally by Excel Crab. Our fish comes from S&J Fisheries. Our meat is from M.C. Kelly down the road. We don't do shortcuts — fresh, local and properly cooked is the only way we know.</p>
+          </div>
+        </div>
+
+        <div class="pillar reveal reveal--d2">
+          <div class="pillar__img-wrap">
+            <img class="pillar__img"
+              src="https://static.wixstatic.com/media/6e87c4_4584538a177644d1b2a8cc4b5bfbc436~mv2.png"
+              alt="Artisan coffee and homemade pastries at The Wardroom"
+              loading="lazy">
+          </div>
+          <div class="pillar__body">
+            <p class="pillar__tag">The Coffee</p>
+            <h3 class="pillar__title">Origin Coffee, done right</h3>
+            <p class="pillar__copy">We've partnered with Origin — one of the UK's most respected specialty roasters — because good coffee matters. Whether it's a flat white at half eight or a post-lunch espresso, we take it seriously.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Supplier strip -->
+      <div class="suppliers reveal">
+        <p class="suppliers__label">Proudly partnered with</p>
+        <div class="suppliers__names">
+          <span class="suppliers__name">Origin Coffee</span>
+          <span class="suppliers__name">Excel Crab</span>
+          <span class="suppliers__name">S &amp; J Fisheries</span>
+          <span class="suppliers__name">M.C. Kelly Butchers</span>
+          <span class="suppliers__name">Last Course Patisserie</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Full-width photo mosaic — sits outside the container intentionally -->
+    <div class="photo-mosaic reveal" style="margin-top: 4rem;">
+      <img class="mosaic-img mosaic-img--tall"
+        src="https://static.wixstatic.com/media/6e87c4_8b1a18f8c1e44c9b97237545541c2363~mv2.jpg"
+        alt="The Wardroom waterfront terrace, Salcombe"
+        loading="lazy">
+      <img class="mosaic-img"
+        src="https://static.wixstatic.com/media/6e87c4_95045ade488140ae8884fc2c62da8295~mv2.jpg"
+        alt="Al fresco dining on The Wardroom terrace"
+        loading="lazy">
+      <img class="mosaic-img"
+        src="https://static.wixstatic.com/media/6e87c4_ad8902d4a7374cbdaff31d591047c5df~mv2.jpg"
+        alt="Guests dining with estuary views at The Wardroom"
+        loading="lazy">
+      <img class="mosaic-img"
+        src="https://static.wixstatic.com/media/0d1451d2af02464fad0a2e2d83cca960.jpg"
+        alt="Salcombe estuary coastal views from The Wardroom"
+        loading="lazy">
+      <img class="mosaic-img"
+        src="https://static.wixstatic.com/media/6e87c4_f84369b0033c494b9bdd8c4d3e36ac96~mv2.png"
+        alt="Fresh seafood dishes at The Wardroom"
+        loading="lazy">
+      <img class="mosaic-img"
+        src="https://static.wixstatic.com/media/6e87c4_4584538a177644d1b2a8cc4b5bfbc436~mv2.png"
+        alt="Breakfast and coffee at The Wardroom Salcombe"
+        loading="lazy">
+    </div>
+
+  </section>
+
+
+  <!-- ================================================================
+       TERRACE BANNER
+       ================================================================ -->
+  <div class="terrace-banner" aria-hidden="true">
+    <div class="terrace-banner__text">
+      <p class="terrace-banner__label">Al Fresco Dining</p>
+      <p class="terrace-banner__quote">"Views across the estuary,<br>a table to remember"</p>
+    </div>
+  </div>
+
+
+  <!-- ================================================================
+       MENU
+       ================================================================ -->
+  <section class="section section--light" id="menu">
+    <div class="container">
+
+      <div class="menu__header reveal">
+        <p class="u-label">What we offer</p>
+        <h2>A taste of <em>the coast</em></h2>
+        <div class="u-divider u-divider--center"></div>
+        <p>A seasonally rotating menu celebrating Devon's finest land and sea.</p>
+      </div>
+
+      <div class="menu__tabs reveal" role="tablist">
+        <button class="menu__tab is-active" role="tab" aria-selected="true"  data-tab="breakfast">Breakfast</button>
+        <button class="menu__tab"            role="tab" aria-selected="false" data-tab="lunch">Lunch</button>
+        <button class="menu__tab"            role="tab" aria-selected="false" data-tab="evening">Evening</button>
+        <button class="menu__tab"            role="tab" aria-selected="false" data-tab="children">Children's</button>
+      </div>
+
+      <!-- BREAKFAST -->
+      <div class="menu__panel is-active" id="panel-breakfast" role="tabpanel">
+        <h3 class="menu__section-heading">Cooked Breakfast <span class="menu__time">9:00 – 12:00</span></h3>
+        <div class="menu__grid">
+          <div class="menu__item"><div><p class="menu__item-name">Full English</p><p class="menu__item-desc">Free range fried egg, two rashers of dry cured bacon, two award winning sausages, field mushroom, cherry tomatoes on the vine, baked beans, hash brown & toast</p></div><span class="menu__item-price">£17</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Small Breakfast</p><p class="menu__item-desc">Free range fried egg, one rasher of dry cured bacon, award winning sausage, field mushroom, cherry tomato on the vine, baked beans & toast</p></div><span class="menu__item-price">£14</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Joe's Special</p><p class="menu__item-desc">Sourdough toast with two rashers of dry cured bacon, avocado, hollandaise sauce, hash brown and a free range fried egg</p></div><span class="menu__item-price">£16</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Vegetarian Breakfast</p><p class="menu__item-desc">Free range fried egg, vegan sausage, tomato on the vine, hash brown, baked beans, field mushroom, and toast</p></div><span class="menu__item-price">£16</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Vegan Breakfast</p><p class="menu__item-desc">Wild mushrooms, wilted spinach, cherry tomato on the vine, avocado, vegan sausage, hash brown and baked beans on sourdough toast</p></div><span class="menu__item-price">£17.50</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Scrambled or Poached Eggs on Toast</p><p class="menu__item-desc">White, granary or sourdough toast, 2 free-range eggs and Cornish double cream. Add salmon +£5</p></div><span class="menu__item-price">£10</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Porridge</p><p class="menu__item-desc">Organic jumbo oats served with Cornish double cream, honey and blueberries</p></div><span class="menu__item-price">£9.50</span></div>
+        </div>
+
+        <h3 class="menu__section-heading">Benedicts</h3>
+        <div class="menu__grid">
+          <div class="menu__item"><div><p class="menu__item-name">Eggs Benedict</p><p class="menu__item-desc">Sourdough toast, dry cured bacon, two free range poached eggs & our signature hollandaise sauce</p></div><span class="menu__item-price">£15</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Eggs Florentine</p><p class="menu__item-desc">Sourdough toast, two free range poached eggs, field mushroom, wilted spinach & our signature hollandaise sauce</p></div><span class="menu__item-price">£15</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Crab Benedict</p><p class="menu__item-desc">Sourdough toast, Salcombe white crab, two free range poached eggs & our signature hollandaise sauce</p></div><span class="menu__item-price">£22</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Eggs Royal</p><p class="menu__item-desc">Sourdough toast, two free range poached eggs, smoked salmon & our signature hollandaise sauce</p></div><span class="menu__item-price">£20</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Poached Eggs, Avocado & Bacon</p><p class="menu__item-desc">Two free range poached eggs served with dry cured bacon and avocado on sourdough toast</p></div><span class="menu__item-price">£15</span></div>
+        </div>
+
+        <h3 class="menu__section-heading">Sandwiches, Baps & Toast</h3>
+        <div class="menu__grid">
+          <div class="menu__item"><div><p class="menu__item-name">Classic Bacon or Sausage Sandwich</p><p class="menu__item-desc">Three rashers of dry cured bacon or two award winning sausages. Add an egg +£2</p></div><span class="menu__item-price">£9</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Breakfast Bap</p><p class="menu__item-desc">Two rashers of dry cured bacon, two award winning sausages, hash brown, free range fried egg</p></div><span class="menu__item-price">£15</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Toast</p><p class="menu__item-desc">Freshly baked by the Bake House — white, granary or sourdough. Add jam or marmalade +£2</p></div><span class="menu__item-price">£6</span></div>
+        </div>
+      </div>
+
+      <!-- LUNCH -->
+      <div class="menu__panel" id="panel-lunch" role="tabpanel">
+        <h3 class="menu__section-heading">Mains <span class="menu__time">12:00 – 16:00</span></h3>
+        <div class="menu__grid">
+          <div class="menu__item"><div><p class="menu__item-name">Grilled Plaice</p><p class="menu__item-desc">Salad, fries and béarnaise sauce</p></div><span class="menu__item-price">£20</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Pan Fried Salmon</p><p class="menu__item-desc">New potatoes, hollandaise and mixed leaf salad</p></div><span class="menu__item-price">£20</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Cod and Chips</p><p class="menu__item-desc">Fresh cod in a crisp gluten free batter with chunky chips, homemade mushy peas and tartar sauce</p></div><span class="menu__item-price">£20</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Crab Linguine</p><p class="menu__item-desc">Salcombe white crab meat tossed with chillies, olive oil and lemongrass</p></div><span class="menu__item-price">£25</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Moules Marinière</p><p class="menu__item-desc">In a creamy garlic white wine sauce, served with sourdough bread</p></div><span class="menu__item-price">£20</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Thai Moules</p><p class="menu__item-desc">Sweet chilli, lemongrass, ginger in a white wine sauce finished with fresh coriander</p></div><span class="menu__item-price">£20</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Thai Fish Cakes</p><p class="menu__item-desc">Triple crumb coating with cod, salmon and prawns, mixed leaf salad and sweet chilli sauce</p></div><span class="menu__item-price">£15</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Tempura Prawns</p><p class="menu__item-desc">Mixed leaf side salad, fries and tartar sauce</p></div><span class="menu__item-price">£18</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Cheese Burger</p><p class="menu__item-desc">8oz steak burger with ketchup, mustard, crispy baby gem, tomato, cheddar and pickled gherkin. Served with fries and homemade relish</p></div><span class="menu__item-price">£18</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Chicken Burger</p><p class="menu__item-desc">With lettuce, tomato, mayonnaise, served with fries</p></div><span class="menu__item-price">£18</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Five Bean Crispy Vegetarian Burger</p><p class="menu__item-desc">With mozzarella cheese (V) — vegan option available</p></div><span class="menu__item-price">£18</span></div>
+        </div>
+
+        <h3 class="menu__section-heading">Nachos</h3>
+        <div class="menu__grid">
+          <div class="menu__item"><div><p class="menu__item-name">Cheesy Nachos</p><p class="menu__item-desc">Mozzarella and cheddar, salsa, soured cream and guacamole</p></div><span class="menu__item-price">£14</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Chilli Con Carne Nachos</p><p class="menu__item-desc">Homemade chilli, mozzarella and cheddar, salsa, soured cream and guacamole</p></div><span class="menu__item-price">£18.50</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Five Bean Chilli Nachos</p><p class="menu__item-desc">Homemade vegan chilli topped with mozzarella and cheddar (V, VG option available)</p></div><span class="menu__item-price">£17.50</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Crab Nachos</p><p class="menu__item-desc">Hand-picked white crab meat in a creamy cheese sauce</p></div><span class="menu__item-price">£25</span></div>
+        </div>
+
+        <h3 class="menu__section-heading">Sandwiches <span class="menu__time">served with salad & coleslaw</span></h3>
+        <div class="menu__grid">
+          <div class="menu__item"><div><p class="menu__item-name">B.L.T</p><p class="menu__item-desc">Traditional bacon, lettuce and tomato</p></div><span class="menu__item-price">£13</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Toasted Bacon & Brie</p><p class="menu__item-desc">Three rashers of dry cured bacon, Cornish brie and chef's red onion marmalade or cranberry sauce</p></div><span class="menu__item-price">£14.50</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Avocado, Brie & Cranberry</p><p class="menu__item-desc">V or VG options available</p></div><span class="menu__item-price">£14</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">King Prawn</p><p class="menu__item-desc">With Marie Rose and gem lettuce</p></div><span class="menu__item-price">£15</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Fish Finger Sandwich</p><p class="menu__item-desc">Homemade fresh cod fish fingers with chef's tartar sauce, fresh dill and pickled cucumber</p></div><span class="menu__item-price">£17</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Chicken Club</p><p class="menu__item-desc">Three slices of toasted bread with chicken, bacon, lettuce, tomato and mayonnaise</p></div><span class="menu__item-price">£18</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Crab Sandwich</p><p class="menu__item-desc">Locally caught and hand-picked fresh white crab meat with homemade lemon mayo</p></div><span class="menu__item-price">£22.50</span></div>
+        </div>
+
+        <h3 class="menu__section-heading">Salads</h3>
+        <div class="menu__grid">
+          <div class="menu__item"><div><p class="menu__item-name">Chicken Caesar Salad</p><p class="menu__item-desc">Free range hot chicken breast on crispy cos lettuce, croutons, dry cured bacon and Caesar dressing</p></div><span class="menu__item-price">£18</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Salmon Caesar Salad</p><p class="menu__item-desc">Crispy cos lettuce, croutons, anchovies and Caesar dressing</p></div><span class="menu__item-price">£20</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Crab Salad</p><p class="menu__item-desc">Locally caught hand-picked fresh white crab meat with mixed leaves, cucumber, cherry tomatoes and honey mustard dressing</p></div><span class="menu__item-price">£25</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Tomato, Mozzarella & Avocado</p><p class="menu__item-desc">With a balsamic glaze (V, VG available)</p></div><span class="menu__item-price">£16</span></div>
+        </div>
+
+        <h3 class="menu__section-heading">Sides</h3>
+        <div class="menu__grid">
+          <div class="menu__item"><div><p class="menu__item-name">Bread & Butter</p></div><span class="menu__item-price">£3.50</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Fries</p></div><span class="menu__item-price">£6</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Chunky Chips</p></div><span class="menu__item-price">£6.50</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Coleslaw</p></div><span class="menu__item-price">£5</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Side Salad</p></div><span class="menu__item-price">£5</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Olives</p></div><span class="menu__item-price">£6</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Bread, Olives & Balsamic Oil</p></div><span class="menu__item-price">£12</span></div>
+        </div>
+      </div>
+
+      <!-- EVENING -->
+      <div class="menu__panel" id="panel-evening" role="tabpanel">
+        <h3 class="menu__section-heading">Sharing Plates <span class="menu__time">17:30 – 20:00</span></h3>
+        <p class="menu__section-note">Perfect for sharing — we recommend 3 dishes per couple for the ultimate evening experience</p>
+        <div class="menu__grid">
+          <div class="menu__item"><div><p class="menu__item-name">Gambas Pil Pil</p><p class="menu__item-desc">Succulent prawns sizzled in olive oil with garlic, chilli & smoky paprika</p></div><span class="menu__item-price">£14.95</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Potted Crab</p><p class="menu__item-desc">Locally caught hand-picked fresh white crab meat in mayonnaise with chives & herbs, served with clarified butter & crispy sourdough toast</p></div><span class="menu__item-price">£14.95</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Mini Thai Fishcakes</p><p class="menu__item-desc">Fresh cod, salmon & prawns in golden breadcrumbs with homemade sweet chilli sauce</p></div><span class="menu__item-price">£14.95</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Samphire & Vegetable Tempura</p><p class="menu__item-desc">Samphire with peppers, courgette & aubergine in a delicate light batter, served with soy dipping sauce</p></div><span class="menu__item-price">£9.95</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Mushroom & Mozzarella Croquettes</p><p class="menu__item-desc">Creamy mushroom and mozzarella centres coated in crispy breadcrumbs, deep fried with tangy sour cream dip</p></div><span class="menu__item-price">£9.95</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">BBQ Slow Roasted Belly Pork Bites</p><p class="menu__item-desc">Tender pork belly with our house hickory sauce — a true crowd pleaser</p></div><span class="menu__item-price">£12.95</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Hand-Dived Scallops</p><p class="menu__item-desc">Local scallops pan-seared with chorizo and finished with red wine reduction</p></div><span class="menu__item-price">£17.95</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Homemade Beef Chuck Sliders</p><p class="menu__item-desc">Mini burgers with melted Monterey Jack cheese — comfort food at its finest</p></div><span class="menu__item-price">£13.95</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Marinated Chicken Skewers</p><p class="menu__item-desc">Tender chicken thigh marinated in Greek yogurt with aromatic spices</p></div><span class="menu__item-price">£14.95</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Homemade Fish Goujons</p><p class="menu__item-desc">Fresh cod in crispy breadcrumbs with zesty lemon and herb dip</p></div><span class="menu__item-price">£13.95</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Loaded Crab Fries</p><p class="menu__item-desc">Seasoned fries topped with local crab, feta, garlic mayo, chilli and fresh spring onion</p></div><span class="menu__item-price">£19.95</span></div>
+        </div>
+
+        <h3 class="menu__section-heading">Classic Wardroom Favourites</h3>
+        <p class="menu__section-note">Generous main course portions showcasing the best of Devon's coastal cuisine</p>
+        <div class="menu__grid">
+          <div class="menu__item"><div><p class="menu__item-name">Moules Marinière</p><p class="menu__item-desc">Fresh mussels steamed in creamy garlic white wine sauce, served with sourdough bread</p></div><span class="menu__item-price">£20</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Traditional Cod and Chips</p><p class="menu__item-desc">Fresh cod in a crisp gluten free batter with chunky chips, homemade mushy peas and tartar sauce</p></div><span class="menu__item-price">£20</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Crab Linguine</p><p class="menu__item-desc">Salcombe white crab meat tossed with chillies, olive oil and lemongrass</p></div><span class="menu__item-price">£25</span></div>
+        </div>
+
+        <h3 class="menu__section-heading">Sides</h3>
+        <div class="menu__grid">
+          <div class="menu__item"><div><p class="menu__item-name">Fries</p></div><span class="menu__item-price">£6</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Chunky Chips</p></div><span class="menu__item-price">£6.50</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Bread & Olives with Balsamic Oil</p></div><span class="menu__item-price">£12</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Sourdough Garlic Bread</p></div><span class="menu__item-price">£7</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Side Salad</p></div><span class="menu__item-price">£5</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Homemade Coleslaw</p></div><span class="menu__item-price">£5</span></div>
+        </div>
+      </div>
+
+      <!-- CHILDREN'S -->
+      <div class="menu__panel" id="panel-children" role="tabpanel">
+        <h3 class="menu__section-heading">Children's Breakfast <span class="menu__time">£7 each</span></h3>
+        <div class="menu__grid">
+          <div class="menu__item"><div><p class="menu__item-name">Beans on Toast</p><p class="menu__item-desc">Heinz baked beans with a choice of white or granary toast</p></div><span class="menu__item-price">£7</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Scrambled Eggs on Toast</p><p class="menu__item-desc">A choice of granary or white toast</p></div><span class="menu__item-price">£7</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Cheese on Toast</p><p class="menu__item-desc">A choice of granary or white toast</p></div><span class="menu__item-price">£7</span></div>
+        </div>
+
+        <h3 class="menu__section-heading">Children's Lunch <span class="menu__time">£13 each</span></h3>
+        <div class="menu__grid">
+          <div class="menu__item"><div><p class="menu__item-name">Fish Fingers, Chips & Beans</p><p class="menu__item-desc">Crispy breaded local cod</p></div><span class="menu__item-price">£13</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Two Sausages, Chips & Beans</p></div><span class="menu__item-price">£13</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">4oz Steak Cheeseburger & Fries</p></div><span class="menu__item-price">£13</span></div>
+          <div class="menu__item"><div><p class="menu__item-name">Honey Roasted Baby Pork Ribs</p><p class="menu__item-desc">With fries and beans</p></div><span class="menu__item-price">£13</span></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ================================================================
+       RESERVATION
+       ================================================================ -->
+  <section class="section section--dark" id="reservation">
+    <div class="container--narrow">
+
+      <div class="reservation__header reveal">
+        <p class="u-label" style="color: var(--mist);">Book your visit</p>
+        <h2>Reserve a Table</h2>
+        <div class="u-divider u-divider--center"></div>
+        <p>Fill in the form below and we'll confirm your reservation within 24 hours.<br>For same-day bookings, please call us on <a href="tel:+441548843333" style="color:var(--mist);">01548 843333</a>.</p>
+      </div>
+
+      <!-- 
+        SETUP INSTRUCTIONS:
+        1. Go to https://formspree.io and sign up (free)
+        2. Create a new form
+        3. Copy your form ID (looks like: xeqybgzk)
+        4. Replace YOUR_FORM_ID below with your actual form ID
+      -->
+      <form class="form__grid reveal reveal--d1" 
+            id="res-form" 
+            action="https://formspree.io/f/mqedqvlk" 
+            method="POST">
+        
+        <div class="form__row">
+          <div class="form__group">
+            <label for="fname">First Name</label>
+            <input type="text" id="fname" name="first_name" placeholder="Jane" required autocomplete="given-name">
+          </div>
+          <div class="form__group">
+            <label for="lname">Last Name</label>
+            <input type="text" id="lname" name="last_name" placeholder="Smith" required autocomplete="family-name">
+          </div>
+        </div>
+        <div class="form__row">
+          <div class="form__group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" placeholder="jane@example.com" required autocomplete="email">
+          </div>
+          <div class="form__group">
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" name="phone" placeholder="+44 7700 000000" autocomplete="tel">
+          </div>
+        </div>
+        <div class="form__row">
+          <div class="form__group">
+            <label for="res-date">Preferred Date</label>
+            <input type="date" id="res-date" name="date" required>
+          </div>
+          <div class="form__group">
+            <label for="res-time">Preferred Time</label>
+            <select id="res-time" name="time" required>
+              <option value="" disabled selected>Select a time</option>
+              <optgroup label="Breakfast (9:00–12:00)">
+                <option>9:00 AM</option><option>9:30 AM</option><option>10:00 AM</option>
+                <option>10:30 AM</option><option>11:00 AM</option><option>11:30 AM</option>
+              </optgroup>
+              <optgroup label="Lunch (12:00–16:00)">
+                <option>12:00 PM</option><option>12:30 PM</option><option>1:00 PM</option>
+                <option>1:30 PM</option><option>2:00 PM</option><option>2:30 PM</option><option>3:00 PM</option>
+              </optgroup>
+              <optgroup label="Evening (17:30–20:00)">
+                <option>5:30 PM</option><option>6:00 PM</option><option>6:30 PM</option>
+                <option>7:00 PM</option><option>7:30 PM</option>
+              </optgroup>
+            </select>
+          </div>
+        </div>
+        <div class="form__row">
+          <div class="form__group">
+            <label for="guests">Number of Guests</label>
+            <select id="guests" name="guests" required>
+              <option value="" disabled selected>Select guests</option>
+              <option>1 guest</option><option>2 guests</option><option>3 guests</option>
+              <option>4 guests</option><option>5 guests</option><option>6 guests</option>
+              <option>7 guests</option><option>8 guests</option>
+              <option>9+ guests — please call us</option>
+            </select>
+          </div>
+          <div class="form__group">
+            <label for="occasion">Occasion (optional)</label>
+            <select id="occasion" name="occasion">
+              <option value="" disabled selected>Select occasion</option>
+              <option>No special occasion</option><option>Birthday</option>
+              <option>Anniversary</option><option>Business lunch</option>
+              <option>Date night</option><option>Family gathering</option><option>Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="form__group">
+          <label for="notes">Special Requests</label>
+          <textarea id="notes" name="special_requests" placeholder="Dietary requirements, accessibility needs, high chair, etc."></textarea>
+        </div>
+        
+        <!-- Hidden field to help you identify which restaurant the booking is from -->
+        <input type="hidden" name="_subject" value="New Reservation Request - The Wardroom">
+        
+        <div class="form__submit">
+          <button type="submit" class="btn btn--primary">Request Reservation</button>
+        </div>
+      </form>
+
+      <div class="form__success" id="form-success">
+        <h3>Request received — thank you!</h3>
+        <p>We'll be in touch to confirm your booking shortly. We look forward to welcoming you to The Wardroom.</p>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ================================================================
+       INFO STRIP
+       ================================================================ -->
+  <div class="info-strip">
+    <div class="container">
+      <div class="info-strip__grid">
+
+        <div class="info-block reveal">
+          <div class="info-block__icon">📍</div>
+          <h4>Find Us</h4>
+          <p>19 Fore Street<br>Salcombe, Devon<br>TQ8 8BU</p>
+        </div>
+
+        <div class="info-block reveal reveal--d1">
+          <div class="info-block__icon">📞</div>
+          <h4>Get in Touch</h4>
+          <p>
+            <a href="tel:+441548843333">01548 843333</a><br>
+            <a href="mailto:hello@thewardroom.co.uk">hello@thewardroom.co.uk</a>
+          </p>
+        </div>
+
+        <div class="info-block reveal reveal--d2">
+          <div class="info-block__icon">🕐</div>
+          <h4>Opening Hours</h4>
+          <p>Mon–Wed: 8:30am – 5pm<br>Thu–Sat: 8:30am – 8pm<br>Sunday: 9:30am – 4pm</p>
+        </div>
+
+        <div class="info-block reveal reveal--d3">
+          <div class="info-block__icon">✦</div>
+          <h4>Follow & Review</h4>
+          <p>
+            <a href="https://www.instagram.com/thewardroomsalcombe" target="_blank" rel="noopener">@thewardroomsalcombe</a><br>
+            <a href="https://www.facebook.com/thewardroomsalcombe" target="_blank" rel="noopener">Facebook</a><br>
+            <a href="https://www.tripadvisor.co.uk/Restaurant_Review-g190768-d2465617-Reviews-The_Wardroom-Salcombe_Devon_England.html" target="_blank" rel="noopener">TripAdvisor</a><br>
+            <a href="https://www.google.com/maps/search/The+Wardroom+19+Fore+Street+Salcombe" target="_blank" rel="noopener">Google Reviews</a>
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ================================================================
+       FOOTER
+       ================================================================ -->
+  <footer class="footer">
+    <p class="footer__logo">The Wardroom</p>
+    <div class="footer__socials">
+      <a href="https://www.instagram.com/thewardroomsalcombe" target="_blank" rel="noopener" class="footer__social">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+        Instagram
+      </a>
+      <a href="https://www.facebook.com/thewardroomsalcombe" target="_blank" rel="noopener" class="footer__social">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        Facebook
+      </a>
+      <a href="https://www.tripadvisor.co.uk/Restaurant_Review-g190768-d2465617-Reviews-The_Wardroom-Salcombe_Devon_England.html" target="_blank" rel="noopener" class="footer__social">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm0 15a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-8a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg>
+        TripAdvisor
+      </a>
+      <a href="https://www.google.com/maps/search/The+Wardroom+19+Fore+Street+Salcombe" target="_blank" rel="noopener" class="footer__social">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+        Google Reviews
+      </a>
+    </div>
+    <p class="footer__copy">© 2025 The Wardroom, Salcombe. All rights reserved.</p>
+  </footer>
+
+
+  <script>
+    // nav: add solid background once user has scrolled past the hero a bit
+    const nav = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('nav--solid', window.scrollY > 80);
+    }, { passive: true });
+
+
+    // menu tabs — data-tab attr on buttons maps directly to panel IDs
+    document.querySelectorAll('.menu__tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        // deactivate all
+        document.querySelectorAll('.menu__tab, .menu__panel').forEach(el => {
+          el.classList.remove('is-active');
+          if (el.getAttribute('role') === 'tab') el.setAttribute('aria-selected', 'false');
+        });
+        // activate clicked tab and its panel
+        btn.classList.add('is-active');
+        btn.setAttribute('aria-selected', 'true');
+        document.getElementById('panel-' + btn.dataset.tab).classList.add('is-active');
+      });
+    });
+
+
+    // scroll reveal — IntersectionObserver is well-supported enough to not need a polyfill here
+    const revealObserver = new IntersectionObserver(entries => {
+      entries.forEach(({ target, isIntersecting }) => {
+        if (!isIntersecting) return;
+        target.classList.add('is-visible');
+        revealObserver.unobserve(target); // fire once, then forget
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+
+    // date input: don't let people book in the past
+    document.getElementById('res-date').min = new Date().toISOString().split('T')[0];
+  </script>
+
+</body>
+</html>
